@@ -1,0 +1,41 @@
+create database sanctionKeywords;
+use sanctionKeywords;
+
+create table pep(
+	
+	ID integer primary key auto_increment,
+   	firstName varchar(30) not null,
+        middleName varchar(30),
+        lastName varchar(30)
+	);
+    
+insert into pep(firstName, middleName, lastName) values
+("Neoma", "Noel", "Stacey"),
+("Noel", "Olimpia", "Lemarr"),
+("Olimpia", "Nga", "Jaeger"),
+("Nga", "Kenda", "Villalpando"),
+("Kenda", "Tricia", "Koll"),
+("Tricia", "Melvin", "Coco"),
+("Melvin", "Cindi", "Strothers"),
+("Cindi", "Jena", "Melito"),
+("Jena", "Albertine", "Ho"),
+("Albertine", "Nicolasa", "Compton"),
+("Nicolasa", "Renna", "Smither"),
+("Renna", "Odell", "Ney"),
+("Odell", "Jeni", "Geil"),
+("Jeni", "Rocio", "Buckelew"),
+("Rocio", "Coral", "Maysonet"),
+("Coral", "Rocky", "Reyer"),
+("Rocky", "Jenell", "Fulghum"),
+("Jenell", "Renetta", "Wildermuth"),
+("Renetta", "Krystin", "Rockey"),
+("Krystin", "Carissa", "Bynoe"),
+("Carissa", "Domenic", "Estep"),
+("Domenic", "Kenny", "Hartwick"),
+("Kenny", "Simonne", "Terlizzi"),
+("Simonne", "Twanda", "Okeeffe"),
+("Twanda", "Mai", "Norberg"),
+("Mai", "Florine", "Stotler"),
+("Florine", "Kacy", "Raffaele"),
+("Kacy", "Greta", "Moncada"),
+("Greta", "Kacey", "Macaluso");
