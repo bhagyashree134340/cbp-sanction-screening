@@ -5,8 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
 //import java.lang.Double;
 //import java.sql.Connection;
 //import java.sql.Date;
@@ -14,20 +20,21 @@ import java.sql.SQLException;
 //import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 //import java.util.List;
 //import java.text.DecimalFormat;
+import java.util.Iterator;
 
-import com.connection.MyConnection;
+//import com.connection.MyConnection;
 import com.pojo.Transaction;
 
 public class TransactionDAOImpl implements TransactionDAO{
 	
 	ArrayList<Transaction> transactions = new ArrayList<>();
-	ArrayList<Transaction> validTransactions = new ArrayList<>();
-	ArrayList<Transaction> invalidTransactions = new ArrayList<>();
+
 	static TransactionDAOImpl t = null;	
-	
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
 		//get connection
 		//get instance of PS
 		//set values to PS
@@ -44,21 +51,14 @@ public class TransactionDAOImpl implements TransactionDAO{
 	public ArrayList<Transaction> gettransaction() {
 		return this.transactions;
 	}
-	
-	public ArrayList<Transaction> getValidTransaction() {
-		return this.validTransactions;
-	}
-
-	public ArrayList<Transaction> getinvalidTransaction() {
-		return this.invalidTransactions;
-	}
-	
+		
 	@Override
 	public void readTransaction(String lines[]) 
 	{
 		int flag=0;
 		int payerNameSize=0;
 		int payeeNameSize=0;
+		
 		File file = new File("C:\\Users\\admin\\Desktop\\Sanction Screening\\SampleFileTTS.txt");
 		  
 		BufferedReader br = null;
@@ -73,7 +73,14 @@ public class TransactionDAOImpl implements TransactionDAO{
 						    //System.out.println(st);
 							String transactionRef = st.substring(0, 12);
 							//System.out.println("Id :"+transactionRef);
-							String valueDate = st.substring(12, 20);
+							
+							java.util.Date valueDate = null;
+							try {
+								valueDate = new SimpleDateFormat("dd/MM/yyyy").parse(st.substring(12, 20));
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							//System.out.println("Date :"+valueDate);
 							int firstIndex = st.indexOf(' '), midIndex;
 							midIndex = st.substring(firstIndex + 1).indexOf(' ') + firstIndex + 1;
@@ -94,23 +101,23 @@ public class TransactionDAOImpl implements TransactionDAO{
 							 
 							double amount = Double.parseDouble(st.substring(midIndex+13));
 							//System.out.println("amount :"+amount);
-							transactions.add(new Transaction(transactionRef, valueDate, payerName, payerAccount, payeeName,
-							payeeAccount, amount, "Uploading"));
-							if (uniqueReferenceId(transactionRef)) {				
-								if (presentDate(valueDate)) {
+
+							if (uniqueReferenceId(transactionRef)) {	
+								String s1=dateFormat.format(valueDate);
+								if (presentDate(s1)) {
 									if(alphaNumeric(payerName) && payerNameSize<=35 && alphaNumeric(payeeName) &&
 											payeeNameSize<=35 && alphaNumeric(payeeAccount) && alphaNumeric(payeeAccount)) {
 										if(validAmount(amount)) {
-											validTransactions.add(new Transaction(transactionRef, valueDate, payerName, payerAccount, payeeName,
-											payeeAccount, amount, "Valid Pass"));
+											transactions.add(new Transaction(transactionRef, valueDate, payerName, payerAccount, payeeName,
+													payeeAccount, amount, "Valid Pass"));			
 											flag = 1;
 										}
 									}
 								}
 							}
 							if (flag == 0) {
-								invalidTransactions.add(
-										new Transaction(transactionRef, valueDate, payerName, payerAccount, payeeName, payeeAccount, amount, "Valid Fail"));
+								transactions.add(new Transaction(transactionRef, valueDate, payerName, payerAccount, payeeName,
+										payeeAccount, amount, "Valid Fail"));
 							}
 							flag = 0;
 						}
@@ -130,15 +137,15 @@ public class TransactionDAOImpl implements TransactionDAO{
 	
 	public boolean uniqueReferenceId(String transactionRef) 
 	{
-		for (int i = 0; i < validTransactions.size(); i++) {
-			if (validTransactions.get(i).getTransactionRef().equals(transactionRef)) {
+		for (int i = 0; i < transactions.size(); i++) {
+			if (transactions.get(i).getTransactionRef().equals(transactionRef)) {
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	public boolean presentDate(String date) 
+	public boolean presentDate(String date)
 	{
 		//System.out.println(date);
 		int daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -180,8 +187,7 @@ public class TransactionDAOImpl implements TransactionDAO{
 
 		if (splitter[0].length()<=10 && amount>0)
 		{
-		   // valid
-	        
+		   // valid	        
 	        amount= Math.round(amount * 100.0) / 100.0;
 			return true;
 		}
@@ -195,63 +201,172 @@ public class TransactionDAOImpl implements TransactionDAO{
 	@Override
 	public void moveTransactionsToDB()
 	{
-		int moved=0;
 		
-		Connection con=new MyConnection().getConnection();
 		try {
-			for(int i=0;i<transactions.size();i++)
+			Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/inputFiles","root","mysql");
+			PreparedStatement ps=con.prepareStatement("INSERT INTO fileUploaded(transactionRef,valueDate,payerName,payerAccount,"
+					+ "payeeName,payeeAccount,amount,status) values(?,?,?,?,?,?,?,?)");
+											
+			for(Iterator<Transaction> t=transactions.iterator();t.hasNext();)
 			{
-				PreparedStatement ps=con.prepareStatement("INSERT INTO fileUploaded(transactionRef,valueDate,payerName,payerAccount,payeeName,payeeAccount,amount,status) values(?,?)");
-				ps.setString(1,  transactions.get(i).getTransactionRef());
-				ps.setString(1,  transactions.get(i).getValueDate());
-				ps.setString(1,  transactions.get(i).getPayerName());
-				ps.setString(1,  transactions.get(i).getPayerAccount());
-				ps.setString(1,  transactions.get(i).getPayeeName());
-				ps.setString(1,  transactions.get(i).getPayeeAccount());
-				ps.setDouble(1,  transactions.get(i).getAmount());
-				ps.setString(1,  transactions.get(i).getStatus());
+				Transaction t1=(Transaction) t.next();
+				ps.setString(1,  t1.getTransactionRef());
+				ps.setDate(2,    (Date)t1.getValueDate());
+				ps.setString(3,  t1.getPayerName());
+				ps.setString(4,  t1.getPayerAccount());
+				ps.setString(5,  t1.getPayeeName());
+				ps.setString(6,  t1.getPayeeAccount());
+				ps.setDouble(7,  t1.getAmount());
+				ps.setString(8,  t1.getStatus());
 			
-				moved=ps.executeUpdate();
+				ps.addBatch();
 			}
+			int[] updateCounts=ps.executeBatch();
+			System.out.println(Arrays.toString(updateCounts));
 			
-		} catch (SQLException e) {
+			
+			con.commit();
+			con.setAutoCommit(true);
+			
+		} catch(SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
 	@Override
-	public void displayAllTransactions() {
+	public void displayAllTransactionsFromDB() {
 		// TODO Auto-generated method stub
-		int transactionsSize=transactions.size();
+/*		int transactionsSize=transactions.size();
 		
 		for(int i = 0; i < transactionsSize; i++)
 		{
 			System.out.println(transactions.get(i).toString());
 			System.out.println("\n");
+		}*/
+		try {
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/inputFiles","root","mysql");
+	
+			Statement stmt=con.createStatement();
+			ResultSet rs= stmt.executeQuery("Select * from fileUploaded");
+			while(rs.next()) {
+				String id=rs.getString("transactionRef");
+				java.util.Date dt=(java.util.Date) rs.getDate("valueDate");
+				String payeeName=rs.getString("payeeName");
+				String payeeAccount=rs.getString("payeeAccount");
+				String payerName=rs.getString("payerName");
+				String payerAccount=rs.getString("payerAccount");
+				Double amount=rs.getDouble("amount");
+				String status=rs.getString("status");
+				
+				System.out.println("id "+id);
+				System.out.println("Date "+dt);
+				System.out.println("payeeName "+payeeName);
+				System.out.println("payeeAccount "+payeeAccount);
+				System.out.println("payerName "+ payerName);
+				System.out.println("payerAccount "+payerAccount);
+				System.out.println("amount "+ amount);
+				System.out.println("status "+ status);
+			}
+			con.commit();
+			con.setAutoCommit(true);
+			
+		} catch(SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
 	}
 
 	@Override
-	public void displayValidTransactions() {
+	public void displayValidTransactionsFromDB() {
 		// TODO Auto-generated method stub
-		int validTransactionsSize=validTransactions.size();
-		
-		for(int i = 0; i < validTransactionsSize; i++)
-		{
-			System.out.println(validTransactions.get(i).toString());
-			System.out.println("\n");
+		try {
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/inputFiles","root","mysql");
+	
+			Statement stmt=con.createStatement();
+			ResultSet rs= stmt.executeQuery("Select * from fileUploaded");
+			while(rs.next()) {
+				String id=rs.getString("transactionRef");
+				java.util.Date dt=(java.util.Date) rs.getDate("valueDate");
+				String payeeName=rs.getString("payeeName");
+				String payeeAccount=rs.getString("payeeAccount");
+				String payerName=rs.getString("payerName");
+				String payerAccount=rs.getString("payerAccount");
+				Double amount=rs.getDouble("amount");
+				String status=rs.getString("status");
+				if(status.equals("Valid Pass"))
+				{
+					System.out.println("id "+id);
+					System.out.println("Date "+dt);
+					System.out.println("payeeName "+payeeName);
+					System.out.println("payeeAccount "+payeeAccount);
+					System.out.println("payerName "+ payerName);
+					System.out.println("payerAccount "+payerAccount);
+					System.out.println("amount "+ amount);
+					System.out.println("status "+ status);
+				}
+			}
+			con.commit();
+			con.setAutoCommit(true);
+			
+		} catch(SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void displayInvalidTransactions() {
-		int invalidTransactionsSize=invalidTransactions.size();
-		
-		for(int i = 0; i < invalidTransactionsSize; i++)
-		{
-			System.out.println(invalidTransactions.get(i).toString());
-			System.out.println("\n");
+	public void displayInvalidTransactionsFromDB() {
+		try {
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/inputFiles","root","mysql");
+	
+			Statement stmt=con.createStatement();
+			ResultSet rs= stmt.executeQuery("Select * from fileUploaded");
+			while(rs.next()) {
+				String id=rs.getString("transactionRef");
+				java.util.Date dt=(java.util.Date) rs.getDate("valueDate");
+				String payeeName=rs.getString("payeeName");
+				String payeeAccount=rs.getString("payeeAccount");
+				String payerName=rs.getString("payerName");
+				String payerAccount=rs.getString("payerAccount");
+				Double amount=rs.getDouble("amount");
+				String status=rs.getString("status");
+				if(status.equals("Valid Fail"))
+				{
+					System.out.println("id "+id);
+					System.out.println("Date "+dt);
+					System.out.println("payeeName "+payeeName);
+					System.out.println("payeeAccount "+payeeAccount);
+					System.out.println("payerName "+ payerName);
+					System.out.println("payerAccount "+payerAccount);
+					System.out.println("amount "+ amount);
+					System.out.println("status "+ status);
+				}
+			}
+			con.commit();
+			con.setAutoCommit(true);
+			
+		} catch(SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

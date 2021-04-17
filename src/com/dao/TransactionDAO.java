@@ -9,8 +9,8 @@ public interface TransactionDAO {
 	//public int fileUpload(Transaction transaction);
 	public void readTransaction(String[] lines);
 	public void moveTransactionsToDB();
-	public void displayAllTransactions();
-	public void displayValidTransactions();
-	public void displayInvalidTransactions();
+	public void displayAllTransactionsFromDB();
+	public void displayValidTransactionsFromDB();
+	public void displayInvalidTransactionsFromDB();
 	
 }
