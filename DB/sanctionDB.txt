@@ -9,6 +9,17 @@ create table pep(
         lastName varchar(30)
 	);
     
+create table fileUploaded(
+	
+    transactionRef varchar(12) not null primary key,
+    valueDate date not null,
+    payerName varchar(35) not null,
+    payerAccount varchar(12) not null,
+    payeeName varchar(35) not null,
+    payeeAccount varchar(12) not null,
+    amount double not null
+    );
+    
 insert into pep(firstName, middleName, lastName) values
 ("Neoma", "Noel", "Stacey"),
 ("Noel", "Olimpia", "Lemarr"),
@@ -19,23 +30,17 @@ insert into pep(firstName, middleName, lastName) values
 ("Melvin", "Cindi", "Strothers"),
 ("Cindi", "Jena", "Melito"),
 ("Jena", "Albertine", "Ho"),
-("Albertine", "Nicolasa", "Compton"),
-("Nicolasa", "Renna", "Smither"),
-("Renna", "Odell", "Ney"),
-("Odell", "Jeni", "Geil"),
-("Jeni", "Rocio", "Buckelew"),
-("Rocio", "Coral", "Maysonet"),
-("Coral", "Rocky", "Reyer"),
-("Rocky", "Jenell", "Fulghum"),
-("Jenell", "Renetta", "Wildermuth"),
-("Renetta", "Krystin", "Rockey"),
-("Krystin", "Carissa", "Bynoe"),
-("Carissa", "Domenic", "Estep"),
-("Domenic", "Kenny", "Hartwick"),
-("Kenny", "Simonne", "Terlizzi"),
-("Simonne", "Twanda", "Okeeffe"),
-("Twanda", "Mai", "Norberg"),
-("Mai", "Florine", "Stotler"),
-("Florine", "Kacy", "Raffaele"),
-("Kacy", "Greta", "Moncada"),
-("Greta", "Kacey", "Macaluso");
+("Albertine", "Nicolasa", "Compton");
+
+
+insert into fileUploaded(transactionRef, valueDate, payerName, payerAccount, payeeName, payeeAccount, amount)
+values
+("123456789012", current_date(), "VickeyMickey", "200001020111", "KamleshPatel", "200001020099",  9999.90),
+("123452359012", current_date(), "AnilMehtanin", "200001020112", "KanyaKaur", "200001020919", 9993.00),
+("123456789019", current_date(), "NarayananIyer", "200001020113", "AshwiniKumari", "200001020992", 999.00),
+("123456789001", current_date(), "KamalNathan", "200001020141", "JenaHo", "200001020939", 1256.00),
+("123456709012", current_date(), "VijSavrani", "200001020115", "TestUser1", "200001020994", 500.00),
+("156456789012", current_date(), "NeomaStacey", "200001060111", "MohiniChawal", "200001520999", 329.00),
+("123948589012", current_date(), "VimalSukumar", "200001060111", "KaranKumar", "200001620999", 10000.00),
+("123456225542", current_date(), "AnandiGupta", "200001020181", "KailashGupta", "200001027999", 9529.00),
+("123456789013", current_date(), "CindiMelito", "200001029111", "KavyaNath", "200001080999", 99.00);
