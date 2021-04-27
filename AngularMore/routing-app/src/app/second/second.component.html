@@ -1,0 +1,29 @@
+<button>Display Validation-fail</button>
+<button>Display Screen-pass</button>
+<button>display scree-fail</button>
+
+<h1> Displaying transactions from array</h1>
+
+<table border = '1'>
+    <tr>
+        <th>transactionRef</th>
+        <th>Date</th>
+        <th>payerName</th>
+        <th>payerAccount</th>
+        <th>payeeName</th>
+        <th>payeeAccount</th>
+        <th>amount</th>
+        <th>status</th>
+    </tr>
+
+    <tr *ngFor="let t of transactions">
+        <td>{{t.transactionRef}}</td>
+        <td>{{t.valueDate}}</td>
+        <td>{{t.payerName}}</td>
+        <td>{{t.payerAccount}}</td>
+        <td>{{t.payeeName}}</td>
+        <td>{{t.payeeAccount}}</td>
+        <td>{{t.amount}}</td>
+        <td>{{t.status}}</td>
+    </tr>
+</table>
