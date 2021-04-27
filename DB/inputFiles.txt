@@ -1,0 +1,21 @@
+create database inputfiles;
+use inputfiles;
+
+create table fileuploaded(
+    transactionRef varchar(12),
+    valueDate varchar(10),
+    payerName varchar(35),
+    payerAccount varchar(12),
+    payeeName varchar(35),
+    payeeAccount varchar(12),
+    amount double,
+    status varchar(35)
+);
+
+select * from fileuploaded;
+
+drop table fileuploaded;
+
+insert into fileuploaded values("231423530995", "12-34-5678", "VibavariGurunathan", "C22018221331", "MrunaliLadhwe", "C22018221362", 999.34, "valid-pass");
+insert into fileuploaded values("931824421309", "12-36-5678", "KanchanChib", "C22073923331", "JagguMisal", "C22018209182", -9289.9, "valid-fail");
+insert into fileuploaded values("748327835309", "12-94-5678", "NikhilMadan", "C22019341331", "AnishSaraf", "C22018221892", 99029.34, "valid-pass");

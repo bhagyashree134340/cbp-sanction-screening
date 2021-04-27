@@ -4,14 +4,11 @@ import java.util.List;
 
 import com.pojo.Transaction;
 
-//import java.util.List;
-
-//import com.pojo.Transaction;
-
 public interface TransactionDAO {
 	
 	//public int fileUpload(Transaction transaction);
-	public void readTransaction(String[] lines);
+
+	public String readTransaction();
 	public int moveTransactionsToDB();
 	public List<Transaction> displayAllTransactionsFromDB();
 	public List<Transaction> displayValidTransactions();

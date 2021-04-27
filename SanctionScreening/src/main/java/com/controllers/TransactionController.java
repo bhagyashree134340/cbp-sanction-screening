@@ -3,6 +3,7 @@ package com.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,13 +18,26 @@ public class TransactionController {
 		
 		@RequestMapping(value = "/data", method = RequestMethod.GET)
 		public String message() {
-
 			return "welcome to REST";
 		}
+
+		//dao.moveTransactionsToDB();
 		
+		@CrossOrigin(origins = "https://localhost:4200")
+		@RequestMapping(value = "/uploadfile", method = RequestMethod.GET)
+		public void uploadFile() {
+			System.out.println("Calling the readtrans() in IMPL");
+			String res = dao.readTransaction();
+			System.out.println(res);
+//			return res;
+
+		}
+		
+
+		@CrossOrigin(origins = "http://localhost:4200")
 		@RequestMapping(value = "/transactions", method = RequestMethod.GET)
 		public List<Transaction> showTransactions() {
-			dao.moveTransactionsToDB();
+			System.out.println("calling displayTransactions() in IMPL")
 			return dao.displayAllTransactionsFromDB();
 		}
 		

@@ -1,27 +1,18 @@
 package com.pojo;
 
-//import java.util.Date;
-
-//import java.util.Date;
-
 public class Transaction {
 	
 	private String transactionRef;
-	private java.util.Date valueDate;
+	private String valueDate;
 	private String payerName;
 	private String payerAccount;
 	private String payeeName;
 	private String payeeAccount;
 	private double amount;
-	
-	private String status ="upload";
+	private String status;
 		
-	/*public Transaction() {
-		super();
-		// TODO Auto-generated constructor stub
-	}*/
 
-	public Transaction(String transactionRef, java.util.Date valueDate, String payerName, String payerAccount, String payeeName,
+	public Transaction(String transactionRef, String valueDate, String payerName, String payerAccount, String payeeName,
 			String payeeAccount, double amount, String status) {
 		super();
 		this.transactionRef = transactionRef;
@@ -45,12 +36,12 @@ public class Transaction {
 	}
 
 
-	public java.util.Date getValueDate() {
+	public String getValueDate() {
 		return valueDate;
 	}
 
 
-	public void setValueDate(java.util.Date valueDate) {
+	public void setValueDate(String valueDate) {
 		this.valueDate = valueDate;
 	}
 
@@ -119,7 +110,7 @@ public class Transaction {
 	public String toString() {
 		return "Transaction [transactionRef=" + transactionRef + ", valueDate=" + valueDate + ", payerName=" + payerName
 				+ ", payerAccount=" + payerAccount + ", payeeName=" + payeeName + ", payeeAccount=" + payeeAccount
-				+ ", amount=" + amount + "]";
+				+ ", amount=" + amount + ", status=" + status + "]";
 	}
 
 
