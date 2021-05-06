@@ -43,11 +43,11 @@ public class Transaction {
 		
 	}
 
-	public Transaction(String transactionRef, java.util.Date d, String payerName, String payerAccount, String payeeName,
+	public Transaction(String transactionRef, Date d, String payerName, String payerAccount, String payeeName,
 			String payeeAccount, double amount, String status) {
 		super();
 		this.transactionRef = transactionRef;
-		this.valueDate = (Date) d;
+		this.valueDate = d;
 		this.payerName = payerName;
 		this.payerAccount = payerAccount;
 		this.payeeName = payeeName;
